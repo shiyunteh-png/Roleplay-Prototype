@@ -1,0 +1,784 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Roleplay · practice plan prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F5F1; --app:#FCFBF9; --card:#FFFFFF; --head:#ECEAE5; --line:#DCD9D2;
+  --ink:#1D1C1A; --muted:#6E6A63; --faint:#9A968E;
+  --track:#E8E6E1; --bar:#C9C5BA; --barweak:#1D1C1A;
+  --accent:#E8562A; --accentsoft:#FBE9E2; --good:#2F6B4F; --goodsoft:#E4EFE8;
+  --font:"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#141413; --app:#1B1B19; --card:#222220; --head:#2B2A27; --line:#3A3935;
+    --ink:#F1EFEA; --muted:#AAA59C; --faint:#7E7A73;
+    --track:#33322E; --bar:#6B675E; --barweak:#F1EFEA;
+    --accent:#F2724A; --accentsoft:#3A2720; --good:#7CC3A0; --goodsoft:#1F3329;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#141413; --app:#1B1B19; --card:#222220; --head:#2B2A27; --line:#3A3935;
+  --ink:#F1EFEA; --muted:#AAA59C; --faint:#7E7A73;
+  --track:#33322E; --bar:#6B675E; --barweak:#F1EFEA;
+  --accent:#F2724A; --accentsoft:#3A2720; --good:#7CC3A0; --goodsoft:#1F3329;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* prototype chrome, outside the app */
+.proto{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;padding:14px 16px 10px;font-size:13px;color:var(--muted)}
+.proto strong{font-weight:500;color:var(--ink);margin-right:4px}
+.proto button{background:none;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--ink)}
+.proto button:hover{background:var(--card)}
+.proto .day{font-variant-numeric:tabular-nums}
+
+.stage{display:flex;justify-content:center;padding:0 16px 32px}
+.phone{width:390px;max-width:100%;height:min(820px,calc(100vh - 80px));min-height:600px;background:var(--app);border:1px solid var(--line);border-radius:28px;overflow:hidden;display:flex;flex-direction:column;position:relative}
+@media (max-width:520px){
+  .stage{padding:0}
+  .phone{width:100%;height:calc(100vh - 56px);border-radius:0;border-left:0;border-right:0;border-bottom:0}
+}
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+
+/* app bar */
+.appbar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;border-bottom:1px solid var(--line);background:var(--app);position:sticky;top:0;z-index:2}
+.appbar h1{font-size:17px;font-weight:500;margin:0;letter-spacing:-.01em}
+.appbar .back{background:none;border:0;padding:4px 0;color:var(--muted);font-size:14px}
+.brand{font-weight:600;letter-spacing:-.02em;font-size:18px}
+
+/* tabs */
+.tabs{display:flex;border-bottom:1px solid var(--line);background:var(--app);position:sticky;top:53px;z-index:2}
+.tab{flex:1;background:none;border:0;padding:12px 8px 11px;font-size:14px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:500}
+.tab .n{color:var(--faint);font-weight:400;margin-left:4px}
+
+/* reference-style panel */
+.pad{padding:16px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.panel+.panel{margin-top:14px}
+.ph{display:flex;justify-content:space-between;align-items:center;background:var(--head);padding:11px 16px;border-bottom:1px solid var(--line);font-size:14px;font-weight:500}
+.ph .meta{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.pb{padding:4px 16px}
+
+/* scenario rows (as in Fig. 01) */
+.sc{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line)}
+.sc:last-child{border-bottom:0}
+.sc h3{margin:0 0 3px;font-size:15px;font-weight:500}
+.sc .m{font-size:13px;color:var(--muted)}
+.sc .m b{color:var(--ink);font-weight:500}
+.sc .d{font-size:13px;color:var(--muted);margin-top:6px}
+.sc .why{font-size:12.5px;margin-top:8px;color:var(--ink);display:flex;gap:6px;align-items:baseline}
+.sc .why::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none;transform:translateY(-1px)}
+.sc .why.pick::before{background:var(--muted)}
+.btn-start{flex:none;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:7px 12px;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.btn-start:hover{border-color:var(--ink)}
+.done{flex:none;font-size:12px;color:var(--good);background:var(--goodsoft);border-radius:6px;padding:6px 10px}
+.acts{display:flex;flex-direction:column;gap:6px;flex:none}
+.mini{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:12.5px;white-space:nowrap}
+.mini:hover,.mini[aria-expanded="true"]{border-color:var(--ink)}
+.alts{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0 0 12px}
+.alts .sc{padding:10px 0}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted);margin-top:4px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend .dot{width:8px;height:8px;border-radius:50%;background:var(--ink);display:inline-block}
+.legend .dash{width:14px;border-top:1px dashed var(--faint);display:inline-block}
+.delta.neg{color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:14px 0}
+.stats div{display:flex;flex-direction:column}
+.stats b{font-size:22px;font-weight:300;letter-spacing:-.02em}
+.stats span{font-size:12px;color:var(--muted)}
+.tag{display:inline-block;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:1px}
+
+/* buttons */
+.primary{display:block;width:100%;background:var(--ink);color:var(--app);border:0;border-radius:8px;padding:13px 16px;font-size:15px;font-weight:500}
+.primary:disabled{opacity:.4;cursor:default}
+.secondary{display:block;width:100%;background:none;border:1px solid var(--line);border-radius:8px;padding:12px 16px;font-size:14px;text-align:center;text-decoration:none;color:var(--ink)}
+.secondary:hover{border-color:var(--ink)}
+.link{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;text-underline-offset:3px;font-size:14px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stack>*+*{margin-top:10px}
+
+/* call screen */
+.call{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 24px 32px;text-align:center}
+.call .who{font-size:13px;color:var(--muted)}
+.call h2{font-size:26px;font-weight:400;margin:6px 0 4px;letter-spacing:-.02em}
+.voice{width:132px;height:132px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;position:relative}
+.voice::after{content:"";position:absolute;inset:-1px;border-radius:50%;border:1px solid var(--accent);animation:pulse 2.4s ease-out infinite}
+@keyframes pulse{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.35);opacity:0}}
+@media (prefers-reduced-motion:reduce){.voice::after{animation:none;opacity:.5}}
+.timer{font-size:40px;font-weight:300;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.end{background:var(--accent);color:#fff;border:0;border-radius:999px;padding:14px 34px;font-size:15px;font-weight:500}
+.note{font-size:12px;color:var(--faint)}
+
+/* results (as in Fig. 01) */
+.big{display:flex;align-items:baseline;gap:8px;padding:16px 0 14px;border-bottom:1px solid var(--line)}
+.big .s{font-size:40px;font-weight:300;letter-spacing:-.03em;line-height:1}
+.big .o{font-size:14px;color:var(--muted)}
+.sec{padding:13px 0;border-bottom:1px solid var(--line)}
+.sec:last-child{border-bottom:0}
+.sec .t{display:flex;justify-content:space-between;font-size:14px;font-weight:500}
+.sec .t span{font-weight:400;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{height:4px;background:var(--track);border-radius:2px;margin:8px 0;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--bar);border-radius:2px}
+.sec.weak .bar i{background:var(--barweak)}
+.sec p{margin:0;font-size:13px;color:var(--muted)}
+.delta{font-size:12px;color:var(--good);margin-left:6px;font-weight:500}
+
+/* next-step block */
+.next{margin-top:14px;background:var(--card);border:1px solid var(--ink);border-radius:10px;padding:16px}
+.next h3{margin:0 0 6px;font-size:16px;font-weight:500;letter-spacing:-.01em}
+.next p{margin:0;font-size:14px;color:var(--muted)}
+.next p b{color:var(--ink);font-weight:500}
+.q{margin-top:18px}
+.q .l{font-size:14px;font-weight:500;margin-bottom:2px}
+.q .h{font-size:13px;color:var(--muted);margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--app);border-color:var(--ink)}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{background:var(--card);border:0;padding:10px;font-size:14px}
+.seg button+button{border-left:1px solid var(--line)}
+.seg5{grid-template-columns:repeat(5,1fr)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--app)}
+select{width:100%;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:14px}
+
+/* plan */
+.intro{padding:20px 20px 4px}
+.intro h2{font-size:22px;font-weight:400;letter-spacing:-.02em;margin:0 0 6px}
+.intro p{margin:0;color:var(--muted);font-size:14px}
+.week{margin-top:14px}
+.week .ph .meta{text-transform:none;letter-spacing:0;font-size:12.5px}
+.week.now{border-color:var(--ink)}
+.prog{display:flex;gap:4px;margin:12px 0 4px}
+.prog i{flex:1;height:4px;border-radius:2px;background:var(--track)}
+.prog i.on{background:var(--ink)}
+.prog i.cur{background:var(--accent)}
+.small{font-size:13px;color:var(--muted)}
+.private{font-size:12.5px;color:var(--faint);text-align:center;margin:16px 0 4px}
+.toast{position:absolute;left:16px;right:16px;bottom:16px;background:var(--ink);color:var(--app);border-radius:8px;padding:12px 14px;font-size:14px;transform:translateY(140%);transition:transform .25s ease}
+.toast.show{transform:none}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+.filters{display:flex;gap:6px;overflow-x:auto;padding:12px 16px 0;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.filters .chip{flex:none}
+.empty{padding:20px 4px;color:var(--muted);font-size:14px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<div class="proto" role="region" aria-label="Prototype controls">
+  <strong>Prototype</strong>
+  <button data-a="reopen">Close and reopen app</button>
+  <button data-a="skipweek">Jump a week ahead</button>
+  <button data-a="finishplan">Finish the plan</button>
+  <button data-a="reset">Reset</button>
+  <span class="day" id="today"></span>
+</div>
+<div class="stage">
+  <div class="phone">
+    <main class="screen" id="screen" tabindex="-1"></main>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+</div>
+
+<script>
+/* ---------- data from the case pack ---------- */
+const RAW = `SCN-001,Fact finding,Protection plan,Time-poor professional,easy
+SCN-002,Fact finding,Protection plan,Budget-conscious parent,medium
+SCN-003,Fact finding,Protection plan,Retired and risk-averse,hard
+SCN-004,Fact finding,Savings plan,Recently promoted saver,easy
+SCN-005,Fact finding,Savings plan,Comparison shopper,medium
+SCN-006,Fact finding,Savings plan,Long-standing customer,hard
+SCN-007,Fact finding,Legacy plan,Family decision-maker,easy
+SCN-008,Fact finding,Legacy plan,Cautious first-time buyer,medium
+SCN-009,Fact finding,Legacy plan,Sceptical renewer,hard
+SCN-010,Product pitch,Protection plan,Time-poor professional,easy
+SCN-011,Product pitch,Protection plan,Budget-conscious parent,medium
+SCN-012,Product pitch,Protection plan,Retired and risk-averse,hard
+SCN-013,Product pitch,Savings plan,Recently promoted saver,easy
+SCN-014,Product pitch,Savings plan,Comparison shopper,medium
+SCN-015,Product pitch,Savings plan,Long-standing customer,hard
+SCN-016,Product pitch,Legacy plan,Family decision-maker,easy
+SCN-017,Product pitch,Legacy plan,Cautious first-time buyer,medium
+SCN-018,Product pitch,Legacy plan,Sceptical renewer,hard
+SCN-019,Objection handling,Protection plan,Time-poor professional,easy
+SCN-020,Objection handling,Protection plan,Budget-conscious parent,medium
+SCN-021,Objection handling,Protection plan,Retired and risk-averse,hard
+SCN-022,Objection handling,Savings plan,Recently promoted saver,easy
+SCN-023,Objection handling,Savings plan,Comparison shopper,medium
+SCN-024,Objection handling,Savings plan,Long-standing customer,hard
+SCN-025,Objection handling,Legacy plan,Family decision-maker,easy
+SCN-026,Objection handling,Legacy plan,Cautious first-time buyer,medium
+SCN-027,Objection handling,Legacy plan,Sceptical renewer,hard
+SCN-028,Servicing,Protection plan,Time-poor professional,easy
+SCN-029,Servicing,Protection plan,Budget-conscious parent,medium
+SCN-030,Servicing,Savings plan,Budget-conscious parent,easy
+SCN-031,Servicing,Savings plan,Retired and risk-averse,medium
+SCN-032,Servicing,Legacy plan,Retired and risk-averse,easy
+SCN-033,Servicing,Legacy plan,Family decision-maker,medium`;
+const DESC = {
+  "Time-poor professional":"No cover beyond what work provides.",
+  "Budget-conscious parent":"Two young kids and a tight monthly budget.",
+  "Retired and risk-averse":"Wants certainty and distrusts anything market-linked.",
+  "Recently promoted saver":"New pay rise and no plan for it yet.",
+  "Comparison shopper":"Has 3 quotes and wants the cheapest.",
+  "Long-standing customer":"With the firm for 15 years and expects loyalty.",
+  "Family decision-maker":"Planning what the children will inherit.",
+  "Cautious first-time buyer":"Has never bought a policy before.",
+  "Sceptical renewer":"11 years in, thinking about stopping."
+};
+const RUB = {
+  "Fact finding":{id:"RUB-DISCOVERY",s:[
+    ["Opening and permission",20,"You went straight into questions without checking it was a good time.","You set the agenda and asked permission before digging in."],
+    ["Needs discovery",35,"You stopped at the first need instead of asking what was behind it.","You followed up each answer before moving on."],
+    ["Affordability",25,"Budget never came up, so any plan you suggest is a guess.","You pinned down a monthly budget before talking options."],
+    ["Summarise and confirm",20,"You didn't play back what you heard before wrapping up.","Your summary let her correct one detail, which built trust."]]},
+  "Product pitch":{id:"RUB-PROPOSAL",s:[
+    ["Relevance to stated need",30,"The pitch covered features she never asked about.","Each point tied back to something she said earlier."],
+    ["Product accuracy",30,"Two benefit figures were off. Check the product sheet.","Figures and terms were accurate throughout."],
+    ["Disclosure",25,"Exclusions came up only when he asked.","You raised the exclusions before he had to ask."],
+    ["Communication and presence",20,"Long answers. He lost the thread twice.","Short, clear answers at a steady pace."],
+    ["Close and next step",20,"No next step agreed. Try: \u201cShall we go through the forms on Friday?\u201d","You agreed a date for the next step."]]},
+  "Objection handling":{id:"RUB-PUSHBACK",s:[
+    ["Acknowledge",20,"You answered before he finished his point.","You let him finish before answering, which is why he kept talking."],
+    ["Reframe",20,"You answered the cash-flow point, not the doubt under it.","You found the worry under the objection and spoke to that."],
+    ["Recover the close",20,"No date agreed. Try: \u201cCan I come back Thursday?\u201d","You got back to a clear next step."]]},
+  "Servicing":{id:"RUB-SERVICING",s:[
+    ["Identify and verify",20,"You skipped two verification checks.","Verification was quick and complete."],
+    ["Resolve the request",40,"The request was logged, but she left unsure what happens next.","You resolved it on the call and confirmed the outcome."],
+    ["Retain and reassure",20,"You didn't address why she called in worried.","You reminded her what the policy still protects."]]}
+};
+const RELATED = {"Objection handling":"Product pitch","Product pitch":"Objection handling","Fact finding":"Product pitch","Servicing":"Objection handling"};
+const TYPES = ["Fact finding","Product pitch","Objection handling","Servicing"];
+const PRODUCTS = ["Protection plan","Savings plan","Legacy plan"];
+const LV = ["easy","medium","hard"];
+const SC = RAW.split("\n").map(l=>{const [id,type,product,customer,level]=l.split(",");return {id,type,product,customer,level};});
+const byId = id => SC.find(s=>s.id===id);
+const cap = s => s[0].toUpperCase()+s.slice(1);
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- state ---------- */
+const KEY = "hupo-roleplay-proto-v4";
+const fresh = () => ({plan:null, history:[], dayOffset:0});
+let S = fresh();
+try{ const raw = localStorage.getItem(KEY); if(raw) S = Object.assign(fresh(), JSON.parse(raw)); }catch(e){}
+const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} };
+let V = {view:"home", tab:"plan", filter:"All", draft:null};  // UI-only state
+let timerId = null;
+
+/* ---------- dates ---------- */
+const DAY = 864e5;
+const now = () => new Date(Date.now() + S.dayOffset*DAY);
+const monday = d => { const x = new Date(d); x.setHours(0,0,0,0); const k=(x.getDay()+6)%7; x.setDate(x.getDate()-k); return x; };
+const fmt = d => d.toLocaleDateString("en-GB",{day:"numeric",month:"short"});
+const weekIndex = () => S.plan ? Math.floor((monday(now()) - new Date(S.plan.start)) / (7*DAY)) : 0;
+const weekRange = i => { const a=new Date(new Date(S.plan.start).getTime()+i*7*DAY); const b=new Date(a.getTime()+6*DAY); return fmt(a)+" to "+fmt(b); };
+
+/* ---------- scoring (simulated) ---------- */
+function rnd(a,b){return a+Math.random()*(b-a);}
+function scoreSession(sc, target){
+  const r = RUB[sc.type]; const base = {easy:.74,medium:.64,hard:.56}[sc.level];
+  let ratios = r.s.map(()=>Math.min(.95, base + rnd(-.06,.12)));
+  const names = r.s.map(x=>x[0]);
+  let weak = Math.floor(Math.random()*names.length);
+  if(target && names.includes(target)){
+    // practising the focus skill: it improves; the low point moves elsewhere
+    // practising the focus skill: it improves, and the rest hold roughly steady
+    const ti = names.indexOf(target);
+    ratios = ratios.map(x=>Math.min(.9, x + rnd(-.02,.06)));
+    ratios[ti] = Math.min(.9, base + rnd(.04,.14));
+    if(weak===ti) weak = (ti+1)%names.length;
+    ratios[weak] = Math.max(ratios[weak]-.12, rnd(.46,.54));
+  } else {
+    ratios[weak] = rnd(.36,.46);
+  }
+  const sections = r.s.map((x,i)=>({name:x[0], max:x[1], score:Math.round(ratios[i]*x[1]), low:x[2], good:x[3]}));
+  const total = sections.reduce((a,b)=>a+b.score,0), max = sections.reduce((a,b)=>a+b.max,0);
+  const weakest = sections.reduce((a,b)=> (b.score/b.max < a.score/a.max ? b : a));
+  return {id:sc.id, type:sc.type, at:now().toISOString(), sections, total, max, weakest:weakest.name, target:target||null};
+}
+
+function sectionTimeline(name){
+  const a = S.history.filter(h=>h.sections.some(x=>x.name===name)).map(h=>{const x=h.sections.find(y=>y.name===name);return {score:x.score,max:x.max,at:h.at};});
+  return a.sort((x,y)=>x.at.localeCompare(y.at));
+}
+/* ---------- plan building ---------- */
+// A plan is a queue of sessions. Each week shows `perWeek` of them; missed ones roll forward.
+const DEFAULT_DAYS = {1:[2],2:[2,4],3:[1,3,5],4:[1,2,4,5],5:[1,2,3,4,5]};
+function buildPlan(result, interests, perWeek){
+  const src = byId(result.id), weeks = 4, used = new Set([src.id]), lvl = LV.indexOf(src.level);
+  const seenCustomers = () => new Set([...used].map(id=>byId(id).customer));
+  const prodRank = s => interests.products.includes(s.product)?0:1;
+  const take = s => { used.add(s.id); return s; };
+  const at = i => LV[Math.max(0,Math.min(2,i))];
+  // focus sessions keep the level progression strict
+  const pickFocus = levels => {
+    for(const L of levels){
+      const seen = seenCustomers();
+      const c = SC.filter(s=>s.type===src.type && s.level===L && !used.has(s.id))
+        .sort((a,b)=>prodRank(a)-prodRank(b) || (seen.has(a.customer)?1:0)-(seen.has(b.customer)?1:0) || a.id.localeCompare(b.id));
+      if(c.length) return take(c[0]);
+    }
+    const any = SC.filter(s=>s.type===src.type && !used.has(s.id)).sort((a,b)=>prodRank(a)-prodRank(b));
+    return any.length ? take(any[0]) : null;
+  };
+  // variety sessions favour a new customer over an exact level match
+  const pickVariety = (type, levels) => {
+    const seen = seenCustomers();
+    const c = SC.filter(s=>s.type===type && levels.includes(s.level) && !used.has(s.id)).sort((a,b)=>
+      prodRank(a)-prodRank(b) || (seen.has(a.customer)?1:0)-(seen.has(b.customer)?1:0) ||
+      levels.indexOf(a.level)-levels.indexOf(b.level) || a.id.localeCompare(b.id));
+    if(c.length) return take(c[0]);
+    const any = SC.filter(s=>s.type===type && !used.has(s.id));
+    return any.length ? take(any[0]) : null;
+  };
+  // where variety comes from: the advisor's picks first, otherwise the closest conversation type
+  const others = interests.types.filter(t=>t!==src.type);
+  const sources = others.length ? others.map(t=>({type:t, why:"You chose "+t.toLowerCase(), kind:"pick"}))
+    : interests.types.includes(src.type) ? [{type:src.type, why:"You chose "+src.type.toLowerCase(), kind:"pick"}]
+    : interests.products.length ? interests.products.map(p=>({type:RELATED[src.type], why:"You chose "+p.toLowerCase(), kind:"pick"}))
+    : [{type:RELATED[src.type], why:"Mix it up: "+RELATED[src.type].toLowerCase()+" uses the same skills", kind:"mix"},
+       ...TYPES.filter(t=>t!==src.type && t!==RELATED[src.type]).map(t=>({type:t, why:"A change of pace: "+t.toLowerCase(), kind:"mix"}))];
+  const focusLevels = [[at(lvl)],[at(lvl)],[at(lvl+1),at(lvl)],[at(lvl+1),at(lvl+2),at(lvl)]];
+  const nFocus = Math.ceil(perWeek/2), nVar = perWeek - nFocus;
+  const items = [], focusUsed = []; let v = 0, retry = 0;
+  for(let w=0; w<weeks; w++){
+    for(let f=0; f<nFocus; f++){
+      let s = pickFocus(focusLevels[w]), why;
+      if(!s){ s = byId(focusUsed[retry++ % focusUsed.length] || src.id); why = "Try this customer again and compare your score"; }
+      else {
+        focusUsed.push(s.id);
+        const diff = LV.indexOf(s.level) - lvl;   // describe the level actually picked
+        why = diff>0 ? (w>=3 && LV.indexOf(s.level)===2 && lvl<2 ? "Harder again, to make it stick" : "One level harder")
+            : diff<0 ? "An easier warm-up, new customer"
+            : f>0 ? "Another customer, same skill"
+            : w===1 ? "Same level, different product"
+            : w>=2 && lvl===2 ? "Another hard customer" : "Same level, new customer";
+      }
+      items.push({id:s.id, why:"Works on "+result.weakest+". "+why, kind:"focus", week:w, done:false, doneAt:null});
+    }
+    for(let k=0; k<nVar; k++){
+      const src2 = sources[v++ % sources.length];
+      const s = pickVariety(src2.type, [at(lvl), at(lvl+1), at(lvl-1)]) ||
+                pickVariety(TYPES.find(t=>t!==src.type && SC.some(x=>x.type===t && !used.has(x.id))) || src.type, LV);
+      if(s) items.push({id:s.id, why:src2.why, kind:src2.kind, week:w, done:false, doneAt:null});
+    }
+  }
+  const w0 = result.sections.find(x=>x.name===result.weakest);
+  return {start: monday(now()).toISOString(), createdAt: now().toISOString(), sourceId: src.id, baselineSections: result.sections.map(x=>({name:x.name,score:x.score,max:x.max})), items, focus: result.weakest, focusType: src.type,
+          baseline:{score:w0.score, max:w0.max}, interests, perWeek, days: DEFAULT_DAYS[perWeek].slice(), time:"12:30"};
+}
+const weekOf = iso => Math.floor((monday(new Date(iso)) - new Date(S.plan.start)) / (7*DAY));
+// Lay the queue out over weeks from today: this week = sessions done this week + the next undone ones, up to the pace.
+function schedule(){
+  const P = S.plan, cur = Math.max(0, weekIndex()), k = P.perWeek;
+  const doneThis = P.items.filter(it=>it.done && weekOf(it.doneAt)===cur);
+  const undone = P.items.filter(it=>!it.done);
+  const room = Math.max(0, k - doneThis.length);
+  const thisWeek = doneThis.concat(undone.slice(0, room));
+  const rest = undone.slice(room), later = [];
+  for(let i=0;i<rest.length;i+=k) later.push(rest.slice(i,i+k));
+  return {cur, thisWeek, later};
+}
+const nextPlanned = () => S.plan ? S.plan.items.find(it=>!it.done) : null;
+
+/* ---------- calendar links ---------- */
+const DN = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const pad2 = n => String(n).padStart(2,"0");
+function firstSlot(P){
+  const [h,m] = P.time.split(":").map(Number);
+  const d = new Date(now()); d.setHours(h,m,0,0);
+  for(let i=0;i<8;i++){ const x=new Date(d.getTime()+i*DAY); if(P.days.includes(x.getDay()) && x>now()) return x; }
+  return d;
+}
+const gstamp = d => d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate())+"T"+pad2(d.getHours())+pad2(d.getMinutes())+"00";
+const istamp = d => d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate())+"T"+pad2(d.getHours())+":"+pad2(d.getMinutes())+":00";
+function planText(P){
+  const weeks = [];
+  P.items.filter(it=>!it.done).forEach(it=>{ (weeks[it.week] = weeks[it.week] || []).push(it); });
+  return weeks.map((w,i)=> w && "Week "+(i+1)+": "+w.map(it=>{const s=byId(it.id);return s.customer+" ("+s.type+", "+s.level+")";}).join("; ")).filter(Boolean).join("\n");
+}
+function calLinks(P){
+  const a = firstSlot(P), b = new Date(a.getTime()+20*60000);
+  const title = "Roleplay practice: "+P.focus;
+  const by = P.days.map(d=>["SU","MO","TU","WE","TH","FR","SA"][d]).join(",");
+  const body = "About 10 minutes of roleplay practice.\n\n"+planText(P);
+  const g = "https://calendar.google.com/calendar/render?action=TEMPLATE"+
+    "&text="+encodeURIComponent(title)+"&dates="+gstamp(a)+"/"+gstamp(b)+"&ctz=Asia/Singapore"+
+    "&details="+encodeURIComponent(body)+"&recur="+encodeURIComponent("RRULE:FREQ=WEEKLY;BYDAY="+by+";COUNT="+Math.max(1,P.items.filter(i=>!i.done).length));
+  const o = "https://outlook.office.com/calendar/0/deeplink/compose?subject="+encodeURIComponent(title)+
+    "&startdt="+istamp(a)+"&enddt="+istamp(b)+"&body="+encodeURIComponent(body);
+  return {g,o};
+}
+
+/* ---------- view pieces ---------- */
+function scRow(s, opts={}){
+  const right = opts.right!==undefined ? opts.right : opts.done ? `<span class="done">Done</span>` : opts.noStart ? "" :
+    `<button class="btn-start" data-a="start" data-id="${s.id}" ${opts.target?`data-target="${esc(opts.target)}"`:""}>Start</button>`;
+  return `<div class="sc">
+    <div>
+      <h3>${esc(s.customer)}${opts.badge?`<span class="tag">${esc(opts.badge)}</span>`:""}</h3>
+      <div class="m"><b>${cap(s.level)}</b> · ${esc(s.type)} · ${esc(s.product)}</div>
+      ${opts.brief?"":`<div class="d">${esc(DESC[s.customer])}</div>`}
+      ${opts.why?`<div class="why ${opts.kind==="focus"?"":"pick"}">${esc(opts.why)}</div>`:""}
+    </div>${right}</div>`;
+}
+function practiceList(){
+  const inPlan = new Set(S.plan ? S.plan.items.filter(i=>!i.done).map(i=>i.id) : []);
+  const list = SC.filter(s=>V.filter==="All" || s.type===V.filter);
+  return `<div class="filters" role="group" aria-label="Filter by conversation type">
+      ${["All",...TYPES].map(t=>`<button class="chip" data-a="filter" data-v="${t}" aria-pressed="${V.filter===t}">${t}</button>`).join("")}
+    </div>
+    <div class="pad"><div class="panel">
+      <div class="ph">Practise <span class="meta">${list.length} available</span></div>
+      <div class="pb">${list.map(s=>scRow(s,{badge: inPlan.has(s.id)?"In your plan":""})).join("")}</div>
+    </div></div>`;
+}
+
+function viewHome(){
+  if(!S.plan){
+    return `<div class="appbar"><span class="brand">Roleplay</span></div>
+      <div class="intro"><h2>Pick a customer to practise with</h2><p>The AI plays the customer. You'll be marked when the call ends.</p></div>
+      ${practiceList()}`;
+  }
+  return `<div class="appbar"><span class="brand">Roleplay</span></div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-a="tab" data-v="plan" aria-selected="${V.tab==="plan"}">My plan</button>
+      <button class="tab" role="tab" data-a="tab" data-v="all" aria-selected="${V.tab==="all"}">All practice<span class="n">${SC.length}</span></button>
+    </div>` + (V.tab==="plan" ? myPlan() : practiceList());
+}
+const rangeFor = i => { const a=new Date(new Date(S.plan.start).getTime()+i*7*DAY); return fmt(a)+" to "+fmt(new Date(a.getTime()+6*DAY)); };
+
+function myPlan(){
+  const P = S.plan, total = P.items.length, doneN = P.items.filter(i=>i.done).length;
+  const {cur, thisWeek, later} = schedule();
+  const tl = sectionTimeline(P.focus), latest = tl.length ? tl[tl.length-1] : null;
+  const head = `<div class="intro">
+      <h2>${doneN===total ? "Plan complete" : "Week "+(cur+1)}</h2>
+      <p>Focus: ${esc(P.focus)}${latest?` · latest ${latest.score} / ${latest.max}, started at ${P.baseline.score} / ${P.baseline.max}`:""}</p>
+      <div class="prog" aria-label="${doneN} of ${total} sessions done">${P.items.map(it=>`<i class="${it.done?"on":(thisWeek.includes(it)?"cur":"")}"></i>`).join("")}</div>
+      <div class="small">${doneN} of ${total} sessions done${doneN<total?` · ${P.perWeek} a week, about ${later.length+1} ${later.length?"weeks":"week"} to go`:""}</div>
+      ${doneN<total?`<div style="margin-top:12px"><button class="secondary" data-a="editplan">Edit plan</button></div>`:""}
+    </div>`;
+  if(doneN===total) return planSummary();
+  const row = it => scRow(byId(it.id), {why: it.why, kind: it.kind, done: it.done, target: it.kind==="focus"?P.focus:"",
+                       badge: (!it.done && it.week < cur) ? "Moved from week "+(it.week+1) : ""});
+  const doneThis = thisWeek.filter(i=>i.done).length;
+  let body = `<div class="pad">
+    <div class="panel week now"><div class="ph">This week <span class="meta">${rangeFor(cur)}</span></div>
+      <div class="pb">${thisWeek.length ? thisWeek.map(row).join("") : ""}
+      ${doneThis>=P.perWeek ? `<div class="empty">That's this week's practice done. Your next session unlocks on ${fmt(new Date(new Date(S.plan.start).getTime()+(cur+1)*7*DAY))}, or start it now from All practice.</div>`:""}</div></div>`;
+  later.forEach((w,i)=>{
+    body += `<div class="panel week"><div class="ph">Week ${cur+i+2} <span class="meta">${rangeFor(cur+i+1)}</span></div>
+      <div class="pb">${w.map(it=>scRow(byId(it.id),{brief:true,noStart:true})).join("")}</div></div>`;
+  });
+  const {g,o} = calLinks(P);
+  body += `<p class="small" style="margin-top:12px">Missed a session? It moves to the next week and the rest of your plan shifts back. You'll never have more than ${P.perWeek} in a week.</p>
+    <div class="stack" style="margin-top:12px">
+      <div class="small">Practice time: ${P.days.map(d=>DN[d]).join(", ")} at ${P.time}</div>
+      <div class="row2"><a class="secondary" href="${g}" target="_blank" rel="noopener">Add to Google Calendar</a><a class="secondary" href="${o}" target="_blank" rel="noopener">Add to Outlook</a></div>
+    </div>
+    <p class="private">Only you can see your plan and scores.</p></div>`;
+  return head + body;
+}
+
+function sparkline(points){
+  if(points.length<2) return "";
+  const W=320,H=72,px=8,py=10, xs=i=>px+i*(W-2*px)/(points.length-1), ys=v=>H-py-v*(H-2*py);
+  const d = points.map((p,i)=>(i?"L":"M")+xs(i).toFixed(1)+" "+ys(p.v).toFixed(1)).join(" ");
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="Focus score across ${points.length} attempts">
+    <line x1="${px}" x2="${W-px}" y1="${ys(.55)}" y2="${ys(.55)}" stroke="var(--line)" stroke-dasharray="3 4"/>
+    <path d="${d}" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+    ${points.map((p,i)=>`<circle cx="${xs(i)}" cy="${ys(p.v)}" r="${i===0||i===points.length-1?3.5:2.5}" fill="var(--ink)" stroke="var(--ink)" stroke-width="1.2"/>`).join("")}
+  </svg>`;
+}
+function planSummary(){
+  const P = S.plan, start = new Date(P.start);
+  const since = x => x.at > (P.createdAt || P.start);
+  const tl = sectionTimeline(P.focus).filter(since);
+  const latest = tl.length ? tl[tl.length-1] : P.baseline;
+  const latestScore = Math.round(latest.score/latest.max*P.baseline.max);
+  const best = Math.max(P.baseline.score, ...tl.map(x=>Math.round(x.score/x.max*P.baseline.max)));
+  const gain = latestScore - P.baseline.score;
+  const sessIn = S.history.filter(since);
+  const pts = [{v:P.baseline.score/P.baseline.max}].concat(tl.map(x=>({v:x.score/x.max})));
+  const lastDone = P.items.map(i=>i.doneAt).filter(Boolean).sort().pop();
+  const weeksTaken = lastDone ? Math.floor((monday(new Date(lastDone))-start)/(7*DAY))+1 : 1;
+  const lastSame = [...S.history].reverse().find(r=>r.type===P.focusType && since(r));
+  const base = P.baselineSections || [];
+  const rows = lastSame ? lastSame.sections.map(x=>{
+      const b = base.find(y=>y.name===x.name), dlt = b ? x.score-b.score : 0;
+      return `<div class="sec ${x.name===lastSame.weakest?"weak":""}"><div class="t">${esc(x.name)}<span>${b?b.score+" → ":""}${x.score} / ${x.max}${dlt>0?`<span class="delta">+${dlt}</span>`:dlt<0?`<span class="delta neg">${dlt}</span>`:""}</span></div>
+        <div class="bar"><i style="width:${Math.round(x.score/x.max*100)}%"></i></div></div>`; }).join("") : "";
+  const customers = new Set(sessIn.map(r=>byId(r.id).customer)).size;
+  const hardest = LV[Math.max(...sessIn.map(r=>LV.indexOf(byId(r.id).level)), 0)];
+  const typesDone = new Set(S.history.map(r=>r.type));
+  // next steps
+  const nextFocus = lastSame ? lastSame.weakest : P.focus;
+  const steps = [];
+  if(LV.indexOf(hardest)<2){
+    const hs = SC.find(s=>s.type===P.focusType && s.level===LV[LV.indexOf(hardest)+1]);
+    if(hs) steps.push({t:`Try a ${hs.level} customer`, d:`You've practised up to ${hardest}. ${hs.customer} is the next step up.`, id:hs.id});
+  }
+  const newType = TYPES.find(t=>!typesDone.has(t));
+  if(newType){ const ns = SC.find(s=>s.type===newType && s.level==="easy"); steps.push({t:`Try ${newType.toLowerCase()}`, d:`You haven't practised this conversation yet. Start with an easy one.`, id:ns.id}); }
+  const headline = gain>0 ? `${esc(P.focus)} went from ${P.baseline.score} to ${latestScore} out of ${P.baseline.max}`
+                 : `${esc(P.focus)} is at ${latestScore} out of ${P.baseline.max}, where you started`;
+  return `<div class="intro">
+      <h2>Plan complete</h2>
+      <p>${fmt(start)} to ${lastDone?fmt(new Date(lastDone)):fmt(now())} · ${weeksTaken} ${weeksTaken===1?"week":"weeks"}</p>
+    </div>
+    <div class="pad">
+      <div class="panel"><div class="ph">Your focus <span class="meta">${esc(P.focusType)}</span></div>
+        <div class="pb" style="padding-bottom:14px">
+          <div class="big" style="border-bottom:0;padding-bottom:4px"><span class="s">${gain>0?"+"+gain:latestScore}</span><span class="o">${gain>0?"points on "+esc(P.focus):"out of "+P.baseline.max+" on "+esc(P.focus)}</span></div>
+          <p class="small" style="margin:0 0 8px">${headline}${best>latestScore?`, with a best of ${best}`:""}.</p>
+          ${sparkline(pts)}
+          <div class="legend"><span><i class="dot"></i>Session</span><span><i class="dash"></i>Strong (55%+)</span></div>
+          ${gain<=0?`<p class="small" style="margin-top:8px">Some skills take more than one plan. Keeping the same focus usually pays off.</p>`:""}
+        </div></div>
+      ${rows?`<div class="panel"><div class="ph">First call vs latest call <span class="meta">${esc(P.focusType)}</span></div><div class="pb">${rows}</div></div>`:""}
+      <div class="panel"><div class="ph">What you did</div><div class="pb">
+        <div class="stats"><div><b>${sessIn.length}</b><span>${sessIn.length===1?"session":"sessions"}</span></div><div><b>${customers}</b><span>${customers===1?"customer":"customers"}</span></div><div><b>${cap(hardest)}</b><span>hardest level</span></div></div>
+      </div></div>
+      <div class="next">
+        <h3>What's next</h3>
+        <p>${nextFocus===P.focus ? `Stick with <b>${esc(P.focus)}</b> for one more plan to lock it in.` : `Your lowest section is now <b>${esc(nextFocus)}</b>. A new plan can work on that next.`}</p>
+        <div style="margin-top:14px"><button class="primary" data-a="nextplan">Build my next plan</button></div>
+        <div class="small" style="margin-top:6px;text-align:center">Uses your latest result. You can edit it before saving.</div>
+        ${steps.length?`<div class="pb" style="padding:0;margin-top:8px">${steps.map(s=>{const sc=byId(s.id);return `<div class="sc"><div><h3>${esc(s.t)}</h3><div class="m"><b>${cap(sc.level)}</b> · ${esc(sc.type)} · ${esc(sc.product)}</div><div class="d">${esc(s.d)}</div></div><button class="btn-start" data-a="start" data-id="${sc.id}">Start</button></div>`;}).join("")}</div>`:""}
+      </div>
+      <p class="private">Only you can see your plan and scores.</p>
+    </div>`;
+}
+
+function viewCall(){
+  const s = byId(V.session.id);
+  return `<div class="call">
+    <div><div class="who">${esc(s.type)} · ${esc(s.product)} · ${cap(s.level)}</div>
+      <h2>${esc(s.customer)}</h2><div class="who">${esc(DESC[s.customer])}</div></div>
+    <div class="voice" aria-hidden="true"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div>
+    <div><div class="timer" id="timer">0:00</div><div class="note">Speak as you would with a real customer.</div></div>
+    <div class="stack" style="width:100%;display:flex;flex-direction:column;align-items:center">
+      <button class="end" data-a="endcall">End call</button>
+      <div class="note">Prototype: the conversation is simulated and marked when you end the call.</div>
+    </div></div>`;
+}
+
+function resultPanel(r){
+  const P = S.plan;
+  const sections = r.sections.map(x=>{
+    const delta = (P && x.name===P.focus && r.target===P.focus) ? x.score - P.baseline.score : 0;
+    return `<div class="sec ${x.name===r.weakest?"weak":""}">
+      <div class="t">${esc(x.name)}<span>${x.score} / ${x.max}${delta>0?`<span class="delta">+${delta} since your plan started</span>`:""}</span></div>
+      <div class="bar"><i style="width:${Math.round(x.score/x.max*100)}%"></i></div>
+      <p>${esc(x.score/x.max<.55 ? x.low : x.good)}</p></div>`;
+  }).join("");
+  return `<div class="panel"><div class="ph">After the call <span class="meta">${esc(r.type)}</span></div>
+    <div class="pb"><div class="big"><span class="s">${r.total}</span><span class="o">out of ${r.max}</span></div>${sections}</div></div>`;
+}
+
+function viewResult(){
+  const r = V.result, P = S.plan, weak = r.sections.find(x=>x.name===r.weakest);
+  let next;
+  if(!P || V.rebuild){
+    const d = V.draft;
+    next = `<div class="next">
+      <h3>What to work on next</h3>
+      <p><b>${esc(r.weakest)}</b> was your lowest section (${weak.score} / ${weak.max}). We'll put together a 4-week plan of roleplays that work on it.</p>
+      <div class="q"><div class="l">Anything you want to practise too?</div><div class="h">Optional. We'll add these to your plan.</div>
+        <div class="chips">${TYPES.map(t=>`<button class="chip" data-a="int-type" data-v="${t}" aria-pressed="${d.types.includes(t)}">${t}</button>`).join("")}</div>
+        <div class="chips" style="margin-top:6px">${PRODUCTS.map(p=>`<button class="chip" data-a="int-prod" data-v="${p}" aria-pressed="${d.products.includes(p)}">${p}</button>`).join("")}</div>
+      </div>
+      <div class="q"><div class="l">How many times a week?</div><div class="h">At least once a week works best. Each roleplay takes about 10 minutes.</div>
+        <div class="seg seg5" role="group" aria-label="Sessions per week">${[1,2,3,4,5].map(n=>`<button data-a="pace" data-v="${n}" aria-pressed="${d.perWeek===n}">${n}</button>`).join("")}</div>
+        <div class="small" style="margin-top:6px">${d.perWeek} ${d.perWeek===1?"session":"sessions"} a week, ${d.perWeek*4} in total over 4 weeks</div>
+      </div>
+      <div style="margin-top:18px"><button class="primary" data-a="build">Build my plan</button></div>
+      <div style="margin-top:12px;text-align:center"><button class="link" data-a="home">Skip for now</button></div>
+    </div>`;
+  } else {
+    const n = nextPlanned(), focusNow = r.sections.find(x=>x.name===P.focus);
+    next = `<div class="next">
+      <h3>${r.target===P.focus ? (focusNow && focusNow.score>P.baseline.score ? esc(P.focus)+" is improving" : "Keep going with "+esc(P.focus)) : "Your plan is still on"}</h3>
+      <p>${n ? "Next in your plan:" : "That was the last session in your plan. See how far you've come."}</p>
+      ${n ? `<div class="pb" style="padding:0">${scRow(byId(n.id),{why:n.why,kind:n.kind,target:n.kind==="focus"?P.focus:""})}</div>` : ""}
+      <div class="stack" style="margin-top:10px"><button class="primary" data-a="home">${n?"Back to my plan":"See your plan summary"}</button>
+      <div style="text-align:center"><button class="link" data-a="rebuild">Build a new plan from this result</button></div></div>
+    </div>`;
+  }
+  return `<div class="appbar"><button class="back" data-a="home">Close</button><h1>Your result</h1><span style="width:40px"></span></div>
+    <div class="pad">${resultPanel(r)}${next}</div>`;
+}
+
+const curOf = P => Math.max(0, Math.floor((monday(now()) - new Date(P.start)) / (7*DAY)));
+function alternatives(P, idx){
+  const it = P.items[idx], s = byId(it.id), inPlan = new Set(P.items.filter(i=>!i.done).map(i=>i.id));
+  const type = it.kind==="focus" ? P.focusType : s.type, li = LV.indexOf(s.level);
+  return SC.filter(x=>!inPlan.has(x.id) && x.id!==it.id && x.id!==P.sourceId)
+    .sort((a,b)=> (a.type===type?0:1)-(b.type===type?0:1) || Math.abs(LV.indexOf(a.level)-li)-Math.abs(LV.indexOf(b.level)-li)
+      || (a.customer===s.customer?1:0)-(b.customer===s.customer?1:0) || a.id.localeCompare(b.id))
+    .slice(0,3);
+}
+function viewReview(){
+  const P = V.preview, k = P.perWeek, cur = curOf(P), picked = P.days.length;
+  const undone = P.items.map((it,idx)=>({it,idx})).filter(x=>!x.it.done);
+  const doneN = P.items.length - undone.length;
+  const groups = []; undone.forEach((x,i)=>{ (groups[Math.floor(i/k)] = groups[Math.floor(i/k)] || []).push(x); });
+  const start = new Date(P.start);
+  const blocks = groups.map((g,gi)=>{ const wk = cur+gi, a = new Date(start.getTime()+wk*7*DAY);
+    return `<div class="panel week ${gi===0?"now":""}"><div class="ph">${gi===0?"This week":"Week "+(wk+1)} <span class="meta">${fmt(a)} to ${fmt(new Date(a.getTime()+6*DAY))}</span></div>
+      <div class="pb">${g.map(({it,idx})=>{
+        const ctrl = `<div class="acts"><button class="mini" data-a="swap" data-i="${idx}" aria-expanded="${V.swapOpen===idx}">Swap</button><button class="mini" data-a="remove" data-i="${idx}">Remove</button></div>`;
+        let html = scRow(byId(it.id),{why:it.why,kind:it.kind,brief:true,right:ctrl});
+        if(V.swapOpen===idx){
+          html += `<div class="alts"><div class="small" style="margin-bottom:4px">Swap for one of these, or choose any roleplay.</div>
+            ${alternatives(P,idx).map(a=>scRow(a,{brief:true,right:`<button class="mini" data-a="usealt" data-i="${idx}" data-id="${a.id}">Use this</button>`})).join("")}
+            <button class="link" data-a="openpicker" data-mode="swap" data-i="${idx}">Choose from all roleplays</button></div>`;
+        }
+        return html; }).join("")}</div></div>`; }).join("");
+  const editing = V.editing;
+  return `<div class="appbar"><button class="back" data-a="${editing?"canceledit":"backresult"}">${editing?"Cancel":"Back"}</button><h1>${editing?"Edit plan":"Your plan"}</h1><span style="width:40px"></span></div>
+    <div class="intro"><h2>${editing?"Your plan":"4 weeks on "+esc(P.focus)}</h2>
+      <p>${editing?`Focus: ${esc(P.focus)}. ${doneN} ${doneN===1?"session":"sessions"} done so far.`:"Suggested from your result."} Swap, remove or add sessions until it suits you. Missed sessions move to the next week.</p></div>
+    <div class="pad">
+      <div class="q" style="margin-top:4px"><div class="l">How many times a week?</div><div class="h">At least once a week works best.</div>
+        <div class="seg seg5" role="group" aria-label="Sessions per week">${[1,2,3,4,5].map(n=>`<button data-a="pace2" data-v="${n}" aria-pressed="${k===n}">${n}</button>`).join("")}</div>
+        <div class="small" style="margin-top:6px">${undone.length} ${undone.length===1?"session":"sessions"} over about ${Math.max(1,groups.length)} ${groups.length===1?"week":"weeks"}</div>
+      </div>
+      ${blocks || `<div class="empty">No sessions left in this plan. Add at least one.</div>`}
+      <div style="margin-top:12px"><button class="secondary" data-a="openpicker" data-mode="add">Add a session</button></div>
+      <div class="q"><div class="l">When will you practise?</div><div class="h">Pick ${k===1?"a day":k+" days"} and a time. ${picked===k?"":`${picked} of ${k} picked.`}</div>
+        <div class="chips">${[1,2,3,4,5,6,0].map(d=>`<button class="chip" data-a="day" data-v="${d}" aria-pressed="${P.days.includes(d)}">${DN[d]}</button>`).join("")}</div>
+        <select data-a="time" aria-label="Time" style="margin-top:8px">${["08:00","08:30","12:30","13:00","17:30","18:00","20:00"].map(t=>`<option ${t===P.time?"selected":""}>${t}</option>`).join("")}</select>
+      </div>
+      <div style="margin-top:18px"><button class="primary" data-a="saveplan" ${(picked!==k || !undone.length)?"disabled":""}>${editing?"Save changes":"Save plan"}</button></div>
+      <p class="private">Only you can see your plan and scores.</p>
+    </div>`;
+}
+function viewPicker(){
+  const P = V.preview, inPlan = new Set(P.items.filter(i=>!i.done).map(i=>i.id));
+  const list = SC.filter(s=>V.filter==="All" || s.type===V.filter);
+  return `<div class="appbar"><button class="back" data-a="closepicker">Back</button><h1>${V.pick.mode==="add"?"Add a session":"Swap session"}</h1><span style="width:40px"></span></div>
+    <div class="filters" role="group" aria-label="Filter by conversation type">
+      ${["All",...TYPES].map(t=>`<button class="chip" data-a="filter" data-v="${t}" aria-pressed="${V.filter===t}">${t}</button>`).join("")}</div>
+    <div class="pad"><div class="panel"><div class="ph">Choose a roleplay <span class="meta">${list.length} available</span></div>
+      <div class="pb">${list.map(s=>scRow(s,{badge: inPlan.has(s.id)?"In your plan":"", right:`<button class="mini" data-a="choose" data-id="${s.id}">Choose</button>`})).join("")}</div></div></div>`;
+}
+function renumber(P){
+  const cur = curOf(P);
+  P.items.filter(i=>!i.done).forEach((it,i)=>{ it.week = cur + Math.floor(i/P.perWeek); });
+}
+
+function viewSaved(){
+  const {g,o} = calLinks(S.plan);
+  return `<div class="appbar"><span class="brand">Roleplay</span></div>
+    <div class="intro"><h2>Plan saved</h2><p>Next time you open the app, your plan is the first thing you'll see. Add the practice times to your calendar so you don't have to remember.</p></div>
+    <div class="pad stack">
+      <a class="secondary" href="${g}" target="_blank" rel="noopener">Add to Google Calendar</a>
+      <a class="secondary" href="${o}" target="_blank" rel="noopener">Add to Outlook</a>
+      <div class="small" style="text-align:center">Google adds every session. Outlook adds the first one.</div>
+      <button class="primary" data-a="home">Go to my plan</button>
+    </div>`;
+}
+
+/* ---------- render ---------- */
+const scr = document.getElementById("screen");
+function render(keepScroll){
+  clearInterval(timerId);
+  const v = V.view, y = scr.scrollTop;
+  scr.innerHTML = v==="call"?viewCall(): v==="result"?viewResult(): v==="review"?viewReview(): v==="picker"?viewPicker(): v==="saved"?viewSaved(): viewHome();
+  document.getElementById("today").textContent = "Today: "+now().toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"});
+  if(v==="call"){
+    const t0 = Date.now(), el = document.getElementById("timer");
+    timerId = setInterval(()=>{ const s=Math.floor((Date.now()-t0)/1000); el.textContent = Math.floor(s/60)+":"+pad2(s%60); },500);
+  }
+  scr.scrollTop = keepScroll===false ? y : 0;
+}
+function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toast.k); toast.k=setTimeout(()=>t.classList.remove("show"),2600); }
+
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-a]"); if(!b) return;
+  const a = b.dataset.a, v = b.dataset.v;
+  switch(a){
+    case "start": V.session = {id:b.dataset.id, target:b.dataset.target||null}; V.view="call"; render(); break;
+    case "endcall": {
+      const s = byId(V.session.id);
+      const target = S.plan && V.session.target && s.type===S.plan.focusType ? V.session.target : null;
+      const r = scoreSession(s, target);
+      S.history.push(r);
+      if(S.plan){ const it = S.plan.items.find(i=>i.id===s.id && !i.done); if(it){ it.done = true; it.doneAt = now().toISOString(); } }
+      save(); V.result = r; V.rebuild = false; V.draft = {types:[],products:[],perWeek:1}; V.view="result"; render(); break; }
+    case "int-type": case "int-prod": {
+      const k = a==="int-type"?"types":"products", arr = V.draft[k];
+      V.draft[k] = arr.includes(v) ? arr.filter(x=>x!==v) : arr.concat(v); render(false); break; }
+    case "pace": V.draft.perWeek = Number(v); render(false); break;
+    case "build": V.preview = buildPlan(V.result, V.draft, V.draft.perWeek); V.editing=false; V.swapOpen=null; V.view="review"; render(); break;
+    case "nextplan": {
+      const P = S.plan, lastSame = [...S.history].reverse().find(r=>r.type===P.focusType) || S.history[S.history.length-1];
+      V.preview = buildPlan(lastSame, P.interests || {types:[],products:[]}, P.perWeek); V.editing=false; V.swapOpen=null; V.result = lastSame; V.view="review"; render(); break; }
+    case "finishplan": {
+      if(!S.plan){ toast("Build a plan first"); break; }
+      const P = S.plan, k = P.perWeek, cur = Math.max(0, weekIndex()), start = new Date(P.start).getTime();
+      const undone = P.items.filter(i=>!i.done);
+      if(!undone.length){ toast("Plan already complete"); break; }
+      let when;
+      undone.forEach((it,j)=>{
+        when = new Date(start + (cur + Math.floor(j/k))*7*DAY + (1 + (j%k)*2)*DAY + 12.5*3600e3);
+        const s = byId(it.id), target = it.kind==="focus" && s.type===P.focusType ? P.focus : null;
+        const r = scoreSession(s, target); r.at = when.toISOString(); S.history.push(r);
+        it.done = true; it.doneAt = r.at;
+      });
+      S.dayOffset = Math.max(S.dayOffset, Math.ceil((when.getTime()+DAY - Date.now())/DAY));
+      save(); V = {view:"home", tab:"plan", filter:"All", draft:null}; render(); toast("Plan finished: here's the summary"); break; }
+    case "editplan": V.preview = JSON.parse(JSON.stringify(S.plan)); V.editing=true; V.swapOpen=null; V.view="review"; render(); break;
+    case "canceledit": V.view="home"; V.tab="plan"; render(); break;
+    case "swap": { const i=Number(b.dataset.i); V.swapOpen = V.swapOpen===i?null:i; render(false); break; }
+    case "usealt": { const it=V.preview.items[Number(b.dataset.i)], s=byId(b.dataset.id);
+      if(it.kind==="focus" && s.type===V.preview.focusType){ it.why = "Works on "+V.preview.focus+". You swapped this in"; }
+      else { it.kind="pick"; it.why="You chose this"; }
+      it.id = s.id; V.swapOpen=null; render(false); toast("Swapped for "+s.customer); break; }
+    case "remove": { V.preview.items.splice(Number(b.dataset.i),1); V.swapOpen=null; render(false); toast("Session removed"); break; }
+    case "openpicker": V.pick = {mode:b.dataset.mode, i:Number(b.dataset.i)}; V.filter="All"; V.view="picker"; render(); break;
+    case "closepicker": V.view="review"; render(); break;
+    case "choose": { const s=byId(b.dataset.id), P=V.preview;
+      if(V.pick.mode==="swap"){ const it=P.items[V.pick.i]; it.id=s.id; it.kind="pick"; it.why="You chose this"; toast("Swapped for "+s.customer); }
+      else { P.items.push({id:s.id, why:"You chose this", kind:"pick", week:0, done:false, doneAt:null}); toast("Added "+s.customer+" to the end of your plan"); }
+      V.swapOpen=null; V.view="review"; render(); break; }
+    case "pace2": { const P=V.preview; P.perWeek=Number(v); if(P.days.length!==P.perWeek) P.days = DEFAULT_DAYS[P.perWeek].slice(); render(false); break; }
+    case "backresult": V.view="result"; render(); break;
+    case "day": {
+      const d = Number(v), P = V.preview;
+      if(P.days.includes(d)) P.days = P.days.filter(x=>x!==d);
+      else { P.days = P.days.concat(d); if(P.days.length>P.perWeek) P.days = P.days.slice(-P.perWeek); }
+      P.days.sort((x,y)=>((x+6)%7)-((y+6)%7)); render(false); break; }
+    case "saveplan": renumber(V.preview); S.plan = V.preview; save(); V.tab="plan";
+      if(V.editing){ V.editing=false; V.view="home"; render(); toast("Plan updated"); }
+      else { V.view="saved"; render(); toast("Plan saved"); } break;
+    case "rebuild": V.rebuild = true; V.draft = {types:[],products:[],perWeek:S.plan?S.plan.perWeek:1}; render(); break;
+    case "home": V.view="home"; if(S.plan) V.tab="plan"; render(); break;
+    case "tab": V.view="home"; V.tab=v; render(); break;
+    case "filter": V.filter=v; render(false); break;
+    case "reopen": V = {view:"home", tab:"plan", filter:"All", draft:null}; render(); toast(S.plan?"App reopened: your plan comes first":"App reopened"); break;
+    case "skipweek": S.dayOffset += 7; save(); if(V.view!=="call") render(false); toast("Moved to "+fmt(now())); break;
+    case "reset": S = fresh(); save(); V = {view:"home", tab:"plan", filter:"All", draft:null}; render(); toast("Prototype reset"); break;
+  }
+});
+document.addEventListener("change", e=>{ if(e.target.dataset.a==="time" && V.preview){ V.preview.time = e.target.value; } });
+render();
+</script>
+</body>
+</html>
