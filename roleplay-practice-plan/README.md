@@ -1,14 +1,12 @@
 # Roleplay practice plan
 
-A prototype for the Hupo APM case on roleplay retention.
-
 The biggest drop-off in the data is advisors who come back to the app after a session, then leave without starting another one. This prototype gives them a clear next step: a personal practice plan built from their lowest-scoring skill, which becomes the first thing they see when they return.
 
 ## Running it
 
 Open `index.html` in a browser. There's no build step and nothing to install.
 
-Or use the live version: **[add your GitHub Pages link here]**
+Or use the live version: **[https://shiyunteh-png.github.io/Roleplay-Prototype/roleplay-practice-plan/]**
 
 ## What to try
 
